@@ -16,6 +16,9 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+*.log
+
+*.sqlite
 
 # =========================
 # Operating System Files
@@ -41,3 +44,10 @@ $RECYCLE.BIN/
 Network Trash Folder
 Temporary Items
 .apdisk
+
+#archivos a ignorar:
+node_modules
+.DS_Store
+npm-debug.log
+quiz.sqlite
+.env
