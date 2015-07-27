@@ -5,14 +5,14 @@ var quizController = require('../controllers/quiz_controller');
 
 /* GET home page. */
 router.get('/', function(req, res) {
-  res.render('index', { title: 'Quiz' });
+  res.render('index', { title: 'Quiz', errors: []});
 });
 
 router.param('quizId', quizController.load);
 
 /* GET Credits page. */
 router.get('/author', function(req, res) {
-	res.render('author');
+	res.render('author', {errors: []});
 });
 
 /* router.get('/quizes/question', quizController.question);
