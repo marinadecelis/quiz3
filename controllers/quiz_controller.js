@@ -88,9 +88,32 @@ exports.index= function(req, res){
 	}).catch(function(error){next(error);});
 };
 	
+//Get quizes/:id/edit
+exports.edit = function(req, res){
+	var quiz= req.quiz; //autoload
+	res.render('quizes/edit', {quiz: quiz, errors: []});
+};	
 	
 /*	models.Quiz.findAll().then(function(quizes) {
 		res.render('quizes/index', { quizes: quizes});
 			}).catch(function(error) { next(error);})
 	};
 */	
+
+//put /quizes/:id
+exports.update = function(req, res){
+	req.quiz.pregunta = req.body.quiz.pregunta;
+	req.quiz.respuesta = req.body.quiz.respuesta;
+	
+	req.quiz.validate().then(function(err){
+		if(err){
+			res.render('quizes/edit', {quiz: req.quiz, errors: err.errors});
+		} else{
+			req.quiz//Save guarda campos pregunta y respuesta en DB
+			.save( {fields: ["pregunta", "respuesta"]})	
+			.then( function(){ res.redirect('/quizes');});
+			}
+		}
+	);
+	
+};
