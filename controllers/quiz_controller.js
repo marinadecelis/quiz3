@@ -117,3 +117,10 @@ exports.update = function(req, res){
 	);
 	
 };
+
+//Defenicionde rutas de /quizes/:id
+exports.destroy = function(req, res) {
+	req.quiz.destroy().then( function() {
+		res.redirect('/quizes');
+	}).catch(function(error){next(Error)});
+};
