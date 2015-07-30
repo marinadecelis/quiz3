@@ -6,7 +6,7 @@
     "start": "node ./bin/www"
   },
   "devDependencies": {
-    "sqlite3": "^3.0.8"
+    "sqlite3": "^3.0.4"
   },
   "dependencies": {
     "body-parser": "~1.8.1",
