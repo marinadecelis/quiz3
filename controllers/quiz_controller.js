@@ -56,9 +56,18 @@ exports.index= function(req, res){
 	}).catch(function(error){next(error);});
 };
 	
-	
-/*	models.Quiz.findAll().then(function(quizes) {
-		res.render('quizes/index', { quizes: quizes});
-			}).catch(function(error) { next(error);})
-	};
-*/	
+// Get /quizes/new
+exports.new = function(req,res) {
+	var quiz = models.Quiz.build(  // crea objeto quiz
+		{pregunta: "Pregunta", respuesta: "Respuesta"});
+		res.render('quizes/new', {quiz: quiz});
+};
+
+//POST /quizes/create
+exports.create = function(req, res) {
+	var quiz = models.Quiz.build( req.body.quiz );
+	//guardaen db los campos preguntay respuesta de quiz
+	quiz.save({fields: ["pregunta", "respuesta"]}).then(function(){
+		res.redirect('/quizes');
+	})
+};
