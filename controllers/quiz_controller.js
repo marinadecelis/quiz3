@@ -15,7 +15,7 @@ exports.load = function(req, res, next, quizId){
 
 exports.show = function(req, res){
 	//models.Quiz.find(req.params.quizId).then(function(quiz){
-	res.render('quizes/show', { quiz: req.quiz, errors: [] });
+	res.render('quizes/show', { quiz: req.quiz});
 };
 
 
@@ -24,7 +24,7 @@ exports.answer = function (req, res){
 	if (req.query.respuesta === req.quiz.respuesta){
 		resultado = 'Correcto';
 	}
-	res.render('quizes/answer', {quiz: req.quiz, respuesta: resultado, errors: []});
+	res.render('quizes/answer', {quiz: req.quiz, respuesta: resultado});
 };
 /*	models.Quiz.find(req.params.quizId).then(function(quiz) {
 		if (req.query.respuesta === quiz.respuesta) {
@@ -36,38 +36,6 @@ exports.answer = function (req, res){
 		}
 	})
 */	
-
-//Get /quizes/new
-exports.new = function(req, res){
-	var quiz = models.Quiz.build( //crea objeto quiz 
-	{pregunta: "Pregunta", respuesta: "Respuesta", tema: "otro"}
-	);
-	res.render('quizes/new', {quiz: quiz, errors: []});
-};
-
-//Post /quizes/Create
-exports.create = function(req, res) {
-	var quiz = models.Quiz.build( req.body.quiz );
-
-	quiz.validate().then(
-	function(err){
-		if (err){
-			res.render('quizes/new', {quiz: quiz, errors: err.errors});
-		}else {
-			quiz //Save
-			.save({fields: ["pregunta", "respuesta","tema"]})
-			.then( function(){ res.redirect('/quizes')})
-		}
-	}
-	);
-	
-	/*
-	//guarda en DB los campos pregunta y respuesta de quiz
-	quiz.save({fields: ["pregunta", "respuesta"]}).then(function(){
-		
-	}) //redirección http (url relativo) lista de preguntas
-*/
-	};
 
 
 exports.index= function(req, res){
@@ -84,44 +52,13 @@ exports.index= function(req, res){
 			order: 'pregunta ASC'
 		}	
 	).then(function(quizes){
-		res.render('quizes/index',{quizes: quizes, search: inputValueSearch, errors: []});
+		res.render('quizes/index',{quizes: quizes, search: inputValueSearch});
 	}).catch(function(error){next(error);});
 };
 	
-//Get quizes/:id/edit
-exports.edit = function(req, res){
-	var quiz= req.quiz; //autoload
-	res.render('quizes/edit', {quiz: quiz, errors: []});
-};	
 	
 /*	models.Quiz.findAll().then(function(quizes) {
 		res.render('quizes/index', { quizes: quizes});
 			}).catch(function(error) { next(error);})
 	};
 */	
-
-//put /quizes/:id
-exports.update = function(req, res){
-	req.quiz.pregunta = req.body.quiz.pregunta;
-	req.quiz.respuesta = req.body.quiz.respuesta;
-	req.quiz.tema = req.body.quiz.tema;
-	
-	req.quiz.validate().then(function(err){
-		if(err){
-			res.render('quizes/edit', {quiz: req.quiz, errors: err.errors});
-		} else{
-			req.quiz//Save guarda campos pregunta y respuesta en DB
-			.save( {fields: ["pregunta", "respuesta","tema"]})	
-			.then( function(){ res.redirect('/quizes');});
-			}
-		}
-	);
-	
-};
-
-//Defenicionde rutas de /quizes/:id
-exports.destroy = function(req, res) {
-	req.quiz.destroy().then( function() {
-		res.redirect('/quizes');
-	}).catch(function(error){next(Error)});
-};
