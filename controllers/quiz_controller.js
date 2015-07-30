@@ -15,7 +15,7 @@ exports.load = function(req, res, next, quizId){
 
 exports.show = function(req, res){
 	//models.Quiz.find(req.params.quizId).then(function(quiz){
-	res.render('quizes/show', { quiz: req.quiz, errors: []});
+	res.render('quizes/show', { quiz: req.quiz, errors: [] });
 };
 
 
@@ -26,6 +26,49 @@ exports.answer = function (req, res){
 	}
 	res.render('quizes/answer', {quiz: req.quiz, respuesta: resultado, errors: []});
 };
+/*	models.Quiz.find(req.params.quizId).then(function(quiz) {
+		if (req.query.respuesta === quiz.respuesta) {
+			res.render('quizes/answer', 
+				{ quiz: quiz,	respuesta: 'Correcto'});
+		} else {
+			res.render('quizes/answer',
+				{ quiz: quiz, respuesta: 'Incorrecto'});
+		}
+	})
+*/	
+
+//Get /quizes/new
+exports.new = function(req, res){
+	var quiz = models.Quiz.build( //crea objeto quiz 
+	{pregunta: "Pregunta", respuesta: "Respuesta", tema: "otro"}
+	);
+	res.render('quizes/new', {quiz: quiz, errors: []});
+};
+
+//Post /quizes/Create
+exports.create = function(req, res) {
+	var quiz = models.Quiz.build( req.body.quiz );
+
+	quiz.validate().then(
+	function(err){
+		if (err){
+			res.render('quizes/new', {quiz: quiz, errors: err.errors});
+		}else {
+			quiz //Save
+			.save({fields: ["pregunta", "respuesta","tema"]})
+			.then( function(){ res.redirect('/quizes')})
+		}
+	}
+	);
+	
+	/*
+	//guarda en DB los campos pregunta y respuesta de quiz
+	quiz.save({fields: ["pregunta", "respuesta"]}).then(function(){
+		
+	}) //redirección http (url relativo) lista de preguntas
+*/
+	};
+
 
 exports.index= function(req, res){
 	// y aquí el odigo de búsqueda
@@ -45,31 +88,40 @@ exports.index= function(req, res){
 	}).catch(function(error){next(error);});
 };
 	
-// Get /quizes/new
-exports.new = function(req,res) {
-	var quiz = models.Quiz.build(  // crea objeto quiz
-		{pregunta: "Pregunta", respuesta: "Respuesta"});
-		res.render('quizes/new', {quiz: quiz, errors: []});
-};
-
-//POST /quizes/create
-exports.create = function(req, res) {
-	var quiz = models.Quiz.build( req.body.quiz );
+//Get quizes/:id/edit
+exports.edit = function(req, res){
+	var quiz= req.quiz; //autoload
+	res.render('quizes/edit', {quiz: quiz, errors: []});
+};	
 	
-	//guardaen db los campos preguntay respuesta de quiz
-	quiz
-	.validate()
-	.then(
-		function(err){
-			if (err) {
-				res.render('quizes/new', {quiz: quiz, errors: err.errors});
-			} else{
-				quiz //save: guarda en db campos pregunta y respuesta en quiz
-				.save({fields: ["pregunta", "respuesta"]})
-				.then( function(){ res.redirect('/quizes')})
+/*	models.Quiz.findAll().then(function(quizes) {
+		res.render('quizes/index', { quizes: quizes});
+			}).catch(function(error) { next(error);})
+	};
+*/	
+
+//put /quizes/:id
+exports.update = function(req, res){
+	req.quiz.pregunta = req.body.quiz.pregunta;
+	req.quiz.respuesta = req.body.quiz.respuesta;
+	req.quiz.tema = req.body.quiz.tema;
+	
+	req.quiz.validate().then(function(err){
+		if(err){
+			res.render('quizes/edit', {quiz: req.quiz, errors: err.errors});
+		} else{
+			req.quiz//Save guarda campos pregunta y respuesta en DB
+			.save( {fields: ["pregunta", "respuesta","tema"]})	
+			.then( function(){ res.redirect('/quizes');});
 			}
 		}
 	);
-};	
 	
+};
 
+//Defenicionde rutas de /quizes/:id
+exports.destroy = function(req, res) {
+	req.quiz.destroy().then( function() {
+		res.redirect('/quizes');
+	}).catch(function(error){next(Error)});
+};
